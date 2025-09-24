@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時間割ビューア</title>
+  <style>
+    body {
+      background: #FFF8F2;
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      color: #4A4A4A;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h2 {
+      color: #D291BC;
+      margin: 20px 0 10px;
+    }
+    .timetable {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      text-align: center;
+      padding: 10px;
+    }
+    th {
+      background: #F0E0E0;
+      color: #6A6A6A;
+    }
+    /* 科目ごとの色分け */
+    .論国 { background: #FFE4E1; font-weight: bold; }
+    .数A { background: #E0F7E9; }
+    .数特子制, .数特子回 { background: #C8E6C9; }
+    .プロ技 { background: #E3F2FD; }
+    .課研 { background: #FFF9C4; }
+    .英表Ⅰ子制, .英表Ⅰ子回 { background: #F8BBD0; }
+    .コン技 { background: #D1C4E9; }
+    .実習 { background: #FFECB3; }
+    .CⅡ { background: #FFCDD2; }
+    .ハード { background: #B2DFDB; }
+    .地総 { background: #FFCCBC; }
+    .HR { background: #CFD8DC; }
+    .体育 { background: #C5CAE9; }
+  </style>
+</head>
+<body>
+  <h2>今週の時間割</h2>
+  <table class="timetable" id="current"></table>
+
+  <h2>来週の時間割</h2>
+  <table class="timetable" id="next"></table>
+
+  <script>
+    // ★ 君のGASのWebアプリ公開URLに置き換える
+    const API_URL = "https://script.google.com/macros/s/AKfycbxxxxxxx/exec";
+
+    async function fetchSchedules() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        renderTable(data.currentSchedule, "current");
+        renderTable(data.nextSchedule, "next");
+      } catch (e) {
+        console.error("取得エラー:", e);
+      }
+    }
+
+    function renderTable(matrix, tableId) {
+      const table = document.getElementById(tableId);
+      table.innerHTML = ""; // 初期化
+      matrix.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+          const td = document.createElement(i === 0 ? "th" : "td");
+          td.textContent = cell;
+          if (i !== 0 && cell) td.classList.add(cell.replace(/\//g,""));
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+    }
+
+    fetchSchedules();
+  </script>
+</body>
+</html>
